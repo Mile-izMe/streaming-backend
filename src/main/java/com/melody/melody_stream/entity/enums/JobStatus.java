@@ -1,4 +1,8 @@
 package com.melody.melody_stream.entity.enums;
 
-public class JobStatus {
+public enum JobStatus {
+    PENDING,
+    PROCESSING,
+    COMPLETED,
+    FAILED
 }

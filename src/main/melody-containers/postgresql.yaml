@@ -1,0 +1,21 @@
+# Copyright Broadcom, Inc. All Rights Reserved.
+# SPDX-License-Identifier: APACHE-2.0
+
+services:
+  postgres:
+    image: docker.io/bitnamilegacy/postgresql:latest
+    container_name: postgres-streaming
+    ports:
+      - '5432:5432'
+    volumes:
+      - 'postgresql_data:/bitnami/postgresql'
+    environment:
+      - 'ALLOW_EMPTY_PASSWORD=false'
+      - 'POSTGRESQL_USERNAME=postgres'
+      - 'POSTGRESQL_PASSWORD=Minh123_A'
+      - 'POSTGRESQL_DATABASE=streaming_db'
+    restart: unless-stopped
+
+volumes:
+  postgresql_data:
+    driver: local

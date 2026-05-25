@@ -1,4 +1,4 @@
-package com.melody.melody_stream.entity.definition;
+package com.melody.melody_stream.entity.enums;
 
 public enum UserStatus {
     ACTIVE,

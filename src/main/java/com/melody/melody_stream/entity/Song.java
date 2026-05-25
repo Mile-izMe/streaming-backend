@@ -1,4 +1,49 @@
 package com.melody.melody_stream.entity;
 
-public class Song {
+import com.melody.melody_stream.entity.base.AuditableEntity;
+import jakarta.persistence.*;
+import lombok.*;
+import org.hibernate.annotations.Filter;
+import org.hibernate.annotations.FilterDef;
+import org.hibernate.annotations.ParamDef;
+import org.hibernate.annotations.SQLDelete;
+
+import java.util.ArrayList;
+import java.util.List;
+
+@Entity
+@Table(name = "songs")
+@SQLDelete(sql = "UPDATE songs SET deleted_at = NOW() WHERE id = ?")
+@FilterDef(name = "deletedFilter", parameters = @ParamDef(name = "isDeleted", type = Boolean.class))
+@Filter(name = "deletedFilter", condition = "deleted_at IS NULL")
+@Getter
+@Setter
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
+public class Song extends AuditableEntity {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.UUID)
+    @Column(name = "id", updatable = false, nullable = false)
+    private String id;
+
+    @Column(name = "title", nullable = false)
+    private String title;
+
+    @Column(name = "artist", nullable = false)
+    private String artist;
+
+    @Column(name = "audio_url", nullable = false)
+    private String audioUrl;
+
+    @Column(name = "thumbnail_url")
+    private String thumbnailUrl;
+
+    // Duration in milliseconds — same as Prisma schema comment
+    @Column(name = "duration")
+    private Integer duration;
+
+    @OneToMany(mappedBy = "song", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private List<PlaylistSong> playlists = new ArrayList<>();
 }
