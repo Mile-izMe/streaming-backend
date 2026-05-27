@@ -1,6 +1,6 @@
 package com.melody.melody_stream.entity;
 
-import com.melody.melody_stream.entity.base.AuditableEntity;
+import com.melody.melody_stream.core.entity.AuditableEntity;
 import com.melody.melody_stream.entity.enums.RoleName;
 import jakarta.persistence.*;
 import jakarta.persistence.CascadeType;

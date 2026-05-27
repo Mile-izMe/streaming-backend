@@ -1,4 +1,4 @@
-package com.melody.melody_stream.entity.base;
+package com.melody.melody_stream.config;
 
 import jakarta.annotation.PostConstruct;
 import jakarta.persistence.EntityManager;

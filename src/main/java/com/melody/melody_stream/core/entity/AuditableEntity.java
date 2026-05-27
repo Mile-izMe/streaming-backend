@@ -1,4 +1,4 @@
-package com.melody.melody_stream.entity.base;
+package com.melody.melody_stream.core.entity;
 
 import jakarta.persistence.*;
 import lombok.*;

@@ -28,6 +28,18 @@ spring:
       host: localhost
       port: 6379
 
+  rabbitmq:
+    host: localhost
+    port: 5672
+    username: melody
+    password: melody123
+    listener:
+      simple:
+        acknowledge-mode: manual
+        prefetch: 1
+        concurrency: 2
+        max-concurrency: 6
+
 springdoc:
   api-docs:
     enabled: true
@@ -35,6 +47,24 @@ springdoc:
   swagger-ui:
     path: "/api-docs"
   show-actuator: true
+
+app:
+   jobs:
+    process-music:
+       exchange: jobs.exchange
+       routing-key: jobs.process-music
+       queue: process-music.queue
+       retry:
+         exchange: jobs.retry.exchange
+         rk10s: jobs.process-music.retry.10s
+         rk60s: jobs.process-music.retry.60s
+         queue10s: process-music.retry.10s.queue
+         queue60s: process-music.retry.60s.queue
+         max-attempts: 5
+       dlq:
+         exchange: jobs.dlq.exchange
+         routing-key: jobs.process-music.dlq
+         queue: process-music.dlq
 
 kind: "Application"
 

@@ -1,4 +1,4 @@
-package com.melody.melody_stream.entity.base;
+package com.melody.melody_stream.config;
 
 import org.springframework.context.annotation.*;
 import org.springframework.data.domain.AuditorAware;
