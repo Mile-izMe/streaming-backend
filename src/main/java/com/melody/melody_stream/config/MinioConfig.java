@@ -48,4 +48,12 @@ public class MinioConfig {
                         .build())
                 .build();
     }
+
+    @Bean
+    public MinioClient minioClient() {
+        return MinioClient.builder()
+                .endpoint(endpoint)
+                .credentials(accessKey, secretKey)
+                .build();
+    }
 }

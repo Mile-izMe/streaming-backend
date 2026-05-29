@@ -1,4 +1,4 @@
-package com.melody.melody_stream.entity;
+package com.melody.melody_stream.modules.job.entity;
 
 import com.melody.melody_stream.entity.enums.JobStatus;
 import jakarta.persistence.*;
