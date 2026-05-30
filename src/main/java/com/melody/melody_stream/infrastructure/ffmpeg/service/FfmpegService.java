@@ -131,4 +131,29 @@ public class FfmpegService {
             return 192000; // Default fallback value
         }
     }
+
+    public Double getAudioDuration(String inputPath) throws Exception {
+        // ffprobe optimized to return the true duration
+        List<String> command = List.of(
+                "ffprobe",
+                "-v", "error",
+                "-show_entries", "format=duration",
+                "-of", "default=noprint_wrappers=1:nokey=1",
+                inputPath
+        );
+
+        ProcessBuilder processBuilder = new ProcessBuilder(command);
+        Process process = processBuilder.start();
+
+        try (BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream()))) {
+            String output = reader.readLine();
+            int exitCode = process.waitFor();
+
+            if (exitCode != 0 || output == null) {
+                throw new RuntimeException("Failed to get duration, ffprobe exited with code: " + exitCode);
+            }
+
+            return Double.parseDouble(output.trim());
+        }
+    }
 }
