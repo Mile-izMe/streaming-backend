@@ -9,6 +9,8 @@ import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.io.File;
+
 @Service
 @RequiredArgsConstructor
 public class ProcessMusicOrchestrator {
@@ -24,11 +26,19 @@ public class ProcessMusicOrchestrator {
 
         jobService.markProcessing(job);
 
+        // Generate temp file path in server base on jobId
+        // Use tmp of os (/tmp in Linux) to avoid trash disk
+        String baseTempDir = System.getProperty("java.io.tmpdir") + File.separator + "melody_stream" + File.separator + msg.jobId();
+        String localFilePath = baseTempDir + File.separator + "source_audio.tmp";
+        String hlsOutputDir = baseTempDir + File.separator + "hls";
+
         ProcessMusicContext ctx = ProcessMusicContext.builder()
                 .jobId(msg.jobId())
                 .songId(msg.songId())
                 .userId(msg.userId())
                 .objectKey((String) job.getPayload().get("objectKey"))
+                .localFilePath(localFilePath)
+                .hlsOutputDir(hlsOutputDir)
                 .build();
 
         while (job.getCurrentStep() < job.getMaxStep()) {
