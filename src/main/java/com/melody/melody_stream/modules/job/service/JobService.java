@@ -22,17 +22,17 @@ public class JobService {
     }
 
     @Transactional
-    public void markProcessing(Job job) throws Exception {
+    public void markProcessing(Job job) {
         int updated = jobRepository.updateStatusConditional(
                 job.getId(), JobStatus.PROCESSING, List.of(JobStatus.PENDING, JobStatus.FAILED)
         );
         if (updated == 0) {
-            throw new Exception("Job cannot transition to PROCESSING: " + job.getId());
+            throw new IllegalStateException("Job cannot transition to PROCESSING: " + job.getId());
         }
     }
 
     @Transactional
-    public void increaseStep(String jobId, int by) {
+    public Job increaseStep(String jobId, int by) {
         jobRepository.incrementStep(jobId, by);
         return mustGet(jobId);
     }
