@@ -80,7 +80,6 @@ public class JwtTokenService {
      * Used to extract sub + deviceId BEFORE Redis lookup.
      * Signature is verified separately after Redis validation.
      */
-    @SuppressWarnings("unchecked")
     public JwtPayload decodeRefreshTokenUnsafe(String token) {
         // Split and decode the payload part only (index 1)
         String[] parts   = token.split("\\.");
