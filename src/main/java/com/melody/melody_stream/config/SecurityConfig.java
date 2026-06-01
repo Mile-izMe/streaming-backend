@@ -32,6 +32,13 @@ public class SecurityConfig {
             "/api/auth/refresh",
             "/api/auth/verify-email",
             "/actuator/health",
+
+            // -------- SWAGGER -----------
+            "/v3/api-docs/**",
+            "/swagger-ui/**",
+            "/api-docs/**",
+            "/swagger-ui.html",
+            "/webjars/**"
     };
 
     @Bean

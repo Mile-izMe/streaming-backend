@@ -11,8 +11,7 @@ import org.hibernate.annotations.SQLDelete;
 @Entity
 @Table(name = "role_permissions")
 @SQLDelete(sql = "UPDATE role_permissions SET deleted_at = NOW() WHERE permissions_id = ? AND role_id = ?")
-@FilterDef(name = "deletedFilter", parameters = @ParamDef(name = "isDeleted", type = Boolean.class))
-@Filter(name = "deletedFilter", condition = "deleted_at IS NULL")
+@org.hibernate.annotations.SQLRestriction("deleted_at IS NULL")
 @Getter
 @Setter
 @Builder

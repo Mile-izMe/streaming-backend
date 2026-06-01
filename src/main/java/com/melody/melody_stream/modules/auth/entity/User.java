@@ -20,10 +20,7 @@ import java.util.List;
 @Builder @Getter @Setter @AllArgsConstructor @NoArgsConstructor
 @SQLDelete(sql = "UPDATE users SET deleted_at = NOW() WHERE id = ?")
 // For DELETE -> SET ONLY DELETED_AT
-@FilterDef(name = "deletedFilter",
-        parameters = @ParamDef(name = "isDeleted", type = Boolean.class))
-@Filter(name = "deletedFilter", condition = "deleted_at IS NULL")
-// AUTO FILTER DELETED_AT IS NULL when query
+@org.hibernate.annotations.SQLRestriction("deleted_at IS NULL")
 public class User extends AuditableEntity {
 
     @Id

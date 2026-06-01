@@ -9,6 +9,7 @@ import com.melody.melody_stream.modules.auth.dto.response.JwtPayload;
 import com.melody.melody_stream.modules.auth.dto.response.RegisterResponse;
 import com.melody.melody_stream.modules.auth.dto.response.TokenPair;
 import com.melody.melody_stream.modules.auth.service.AuthService;
+import io.swagger.v3.oas.annotations.Operation;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -25,6 +26,7 @@ public class AuthController {
 
     // POST /api/auth/register
     @PostMapping("/register")
+    @Operation(summary = "Register new account", security = {})
     public ResponseEntity<RegisterResponse> register(
             @Valid @RequestBody RegisterRequest request
     ) {
@@ -34,6 +36,7 @@ public class AuthController {
 
     // GET /api/auth/verify-email?token=...
     @GetMapping("/verify-email")
+    @Operation(summary = "Verify email", security = {})
     public ResponseEntity<Void> verifyEmail(@RequestParam String token) {
         authService.verifyEmail(token);
         return ResponseEntity.noContent().build();   // 204 — redirect handled by client
@@ -41,6 +44,7 @@ public class AuthController {
 
     // POST /api/auth/login
     @PostMapping("/login")
+    @Operation(summary = "Login", security = {})
     public ResponseEntity<AuthResponse> login(
             @Valid @RequestBody LoginRequest request) {
         return ResponseEntity.ok(authService.login(request));

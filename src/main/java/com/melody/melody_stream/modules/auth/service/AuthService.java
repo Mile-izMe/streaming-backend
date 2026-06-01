@@ -10,10 +10,12 @@ import com.melody.melody_stream.modules.auth.dto.response.JwtPayload;
 import com.melody.melody_stream.modules.auth.dto.response.RegisterResponse;
 import com.melody.melody_stream.modules.auth.dto.response.TokenPair;
 import com.melody.melody_stream.modules.auth.entity.User;
+import com.melody.melody_stream.modules.auth.event.UserRegisteredEvent;
 import com.melody.melody_stream.modules.auth.repository.UserRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -30,8 +32,8 @@ public class AuthService {
     private final PasswordEncoder passwordEncoder;
     private final JwtTokenService jwtTokenService;
     private final RefreshTokenService refreshTokenService;
-
-    private final MailService mailService;
+    
+    private final ApplicationEventPublisher applicationEventPublisher;
 
     // ── Register ──────────────────────────────────────────────
 
@@ -63,7 +65,11 @@ public class AuthService {
         userRepository.save(user);
 
         // 4. Fire-and-forget mail (async - won't fail the transaction)
-        mailService.sendVerificationEmail(user.getEmail(), user.getUsername(), verificationToken);
+        // Because the transaction can only execute in database range
+        // mailService.sendVerificationEmail(user.getEmail(), user.getUsername(), verificationToken);
+
+        // WHEN and ONLY WHEN Database has commited successfully
+        applicationEventPublisher.publishEvent(new UserRegisteredEvent(user.getEmail(), user.getUsername(), verificationToken));
 
         log.info("User registered: username={}, email={}", user.getUsername(), user.getEmail());
 

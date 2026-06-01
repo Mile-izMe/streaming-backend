@@ -1,4 +1,8 @@
 spring:
+  docker:
+    compose:
+      enabled: false
+
   datasource:
     url: jdbc:postgresql://localhost:5432/streaming_db
     username: postgres
@@ -23,15 +27,15 @@ spring:
 
   data:
     redis:
-      url: redis://localhost:6379
       database: 0
       host: localhost
       port: 6379
+      password: Minh123_A
 
   mail:
     host: ${MAIL_HOST:smtp.gmail.com}
     port: ${MAIL_PORT:587}
-    username: ${MAIL_USER} 
+    username: ${MAIL_USER}
     password: ${MAIL_PASS}
     properties:
       mail:

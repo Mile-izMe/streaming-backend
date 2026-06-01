@@ -12,8 +12,7 @@ import org.hibernate.annotations.SQLDelete;
 @Entity
 @Table(name = "playlist_songs")
 @SQLDelete(sql = "UPDATE playlist_songs SET deleted_at = NOW() WHERE playlist_id = ? AND song_id = ?")
-@FilterDef(name = "deletedFilter", parameters = @ParamDef(name = "isDeleted", type = Boolean.class))
-@Filter(name = "deletedFilter", condition = "deleted_at IS NULL")
+@org.hibernate.annotations.SQLRestriction("deleted_at IS NULL")
 @Getter
 @Setter
 @Builder

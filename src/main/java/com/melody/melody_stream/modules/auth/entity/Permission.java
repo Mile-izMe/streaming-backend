@@ -14,8 +14,7 @@ import java.util.List;
 @Entity
 @Table(name = "permissions")
 @SQLDelete(sql = "UPDATE permissions SET deleted_at = NOW() WHERE id = ?")
-@FilterDef(name = "deletedFilter", parameters = @ParamDef(name = "isDeleted", type = Boolean.class))
-@Filter(name = "deletedFilter", condition = "deleted_at IS NULL")
+@org.hibernate.annotations.SQLRestriction("deleted_at IS NULL")
 @Getter
 @Setter
 @Builder
