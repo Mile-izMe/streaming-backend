@@ -1,4 +1,4 @@
-package com.melody.melody_stream.entity;
+package com.melody.melody_stream.modules.auth.entity;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Embeddable;

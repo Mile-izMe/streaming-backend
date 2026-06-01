@@ -1,16 +1,22 @@
-package com.melody.melody_stream.entity;
+package com.melody.melody_stream.modules.auth.entity;
 
-import com.melody.melody_stream.entity.enums.UserStatus;
+import com.melody.melody_stream.entity.Playlist;
+import com.melody.melody_stream.core.enums.UserStatus;
 import com.melody.melody_stream.core.entity.AuditableEntity;
 import jakarta.persistence.*;
 import jakarta.persistence.CascadeType;
 import lombok.*;
 import org.hibernate.annotations.*;
+
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
 @Entity
-@Table(name = "users")
+@Table(name = "users", indexes = {
+        @Index(name = "idx_users_email", columnList = "email", unique = true),
+        @Index(name = "idx_users_username", columnList = "username", unique = true)
+})
 @Builder @Getter @Setter @AllArgsConstructor @NoArgsConstructor
 @SQLDelete(sql = "UPDATE users SET deleted_at = NOW() WHERE id = ?")
 // For DELETE -> SET ONLY DELETED_AT
@@ -34,12 +40,16 @@ public class User extends AuditableEntity {
     @Column(name = "email", unique = true, nullable = false)
     private String email;
 
-    @Column(name = "is_active", nullable = false)
-    private Boolean isActive = false;
-
     @Enumerated(EnumType.STRING)
     @Column(name = "status", nullable = false)
     private UserStatus status = UserStatus.ACTIVE;
+
+    // Email verification
+    @Column(name = "verification_token")
+    private String verificationToken;
+
+    @Column(name = "verification_token_expiry")
+    private LocalDateTime verificationTokenExpiry;
 
     // Relationships
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY)

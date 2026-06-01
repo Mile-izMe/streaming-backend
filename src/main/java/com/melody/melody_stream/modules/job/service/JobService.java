@@ -1,6 +1,6 @@
 package com.melody.melody_stream.modules.job.service;
 
-import com.melody.melody_stream.entity.enums.JobStatus;
+import com.melody.melody_stream.core.enums.JobStatus;
 import com.melody.melody_stream.modules.job.entity.Job;
 import com.melody.melody_stream.modules.job.repository.JobRepository;
 import jakarta.persistence.EntityNotFoundException;

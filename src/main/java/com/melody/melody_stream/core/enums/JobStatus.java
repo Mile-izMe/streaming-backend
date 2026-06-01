@@ -1,4 +1,4 @@
-package com.melody.melody_stream.entity.enums;
+package com.melody.melody_stream.core.enums;
 
 public enum JobStatus {
     PENDING,

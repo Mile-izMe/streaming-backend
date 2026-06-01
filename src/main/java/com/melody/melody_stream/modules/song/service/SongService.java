@@ -1,7 +1,7 @@
 package com.melody.melody_stream.modules.song.service;
 
 import com.melody.melody_stream.core.constant.ActionType;
-import com.melody.melody_stream.entity.enums.JobStatus;
+import com.melody.melody_stream.core.enums.JobStatus;
 import com.melody.melody_stream.infrastructure.minio.service.MinioBuildService;
 import com.melody.melody_stream.modules.job.entity.Job;
 import com.melody.melody_stream.modules.job.repository.JobRepository;

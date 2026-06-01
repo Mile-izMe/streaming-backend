@@ -1,5 +1,6 @@
-package com.melody.melody_stream.entity;
+package com.melody.melody_stream.modules.auth.entity;
 
+import com.melody.melody_stream.core.entity.AuditableEntity;
 import jakarta.persistence.*;
 import lombok.*;
 import org.springframework.data.annotation.CreatedBy;
@@ -15,7 +16,9 @@ import java.time.LocalDateTime;
 @Entity
 @Table(name = "refresh_tokens", indexes = {
         @Index(name = "idx_rt_token_hash", columnList = "token_hash"),
-        @Index(name = "idx_rt_user_device", columnList = "user_id, device_id")
+        @Index(name = "idx_rt_user_device", columnList = "user_id, device_id"),
+        @Index(name = "idx_rt_is_revoked", columnList = "is_revoked"),
+        @Index(name = "idx_rt_expires_at", columnList = "expires_at")
 })
 @EntityListeners(AuditingEntityListener.class)
 @Getter
@@ -23,7 +26,7 @@ import java.time.LocalDateTime;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class RefreshToken {
+public class RefreshToken extends AuditableEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
@@ -36,8 +39,8 @@ public class RefreshToken {
     @Column(name = "user_id", nullable = false)
     private String userId;
 
-    @Column(name = "expiry_time", nullable = false)
-    private Integer expiryTime;
+    @Column(name = "expires_at", nullable = false)
+    private LocalDateTime expiresAt;
 
     @Column(name = "device_id")
     private String deviceId;
@@ -45,23 +48,28 @@ public class RefreshToken {
     @Column(name = "is_revoked", nullable = false)
     private Boolean isRevoked = false;
 
+    @Column(name = "revoked_at")
+    private LocalDateTime revokedAt;
+
+    @Column(name = "revoked_by")
+    private String revokedBy;
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", insertable = false, updatable = false)
     private User user;
 
-    @CreatedDate
-    @Column(name = "created_at", updatable = false, nullable = false)
-    private LocalDateTime createdAt;
+    // ── Helpers ───────────────────────────────────────────────
+    public boolean isExpired() {
+        return LocalDateTime.now().isAfter(this.expiresAt);
+    }
 
-    @CreatedBy
-    @Column(name = "created_by", updatable = false)
-    private String createdBy;
+    public boolean isValid() {
+        return !this.isRevoked && !this.isExpired();
+    }
 
-    @LastModifiedDate
-    @Column(name = "updated_at", nullable = false)
-    private LocalDateTime updatedAt;
-
-    @LastModifiedBy
-    @Column(name = "updated_by")
-    private String updatedBy;
+    public void revoke(String revokedBy) {
+        this.isRevoked  = true;
+        this.revokedAt  = LocalDateTime.now();
+        this.revokedBy  = revokedBy;
+    }
 }

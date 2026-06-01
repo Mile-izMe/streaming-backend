@@ -1,6 +1,7 @@
 package com.melody.melody_stream.entity;
 
 import com.melody.melody_stream.core.entity.AuditableEntity;
+import com.melody.melody_stream.modules.auth.entity.User;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.Filter;

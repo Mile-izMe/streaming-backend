@@ -1,6 +1,6 @@
 package com.melody.melody_stream.modules.job.entity;
 
-import com.melody.melody_stream.entity.enums.JobStatus;
+import com.melody.melody_stream.core.enums.JobStatus;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.JdbcTypeCode;

@@ -28,6 +28,17 @@ spring:
       host: localhost
       port: 6379
 
+  mail:
+    host: ${MAIL_HOST:smtp.gmail.com}
+    port: ${MAIL_PORT:587}
+    username: ${MAIL_USER} 
+    password: ${MAIL_PASS}
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls.enable: true
+
   security:
     user:
       name: user
@@ -44,6 +55,21 @@ spring:
         prefetch: 1
         concurrency: 2
         max-concurrency: 6
+
+# JWT
+jwt:
+  access-secret:  ${JWT_ACCESS_SECRET}   # min 32 chars
+  refresh-secret: ${JWT_REFRESH_SECRET}  # min 32 chars
+  access-ttl-ms:  900000          # 15 minutes
+  refresh-ttl-ms: 604800000       # 7 days
+
+# Async thread pool for mail
+spring.task.execution:
+  pool:
+    core-size: 2
+    max-size: 5
+    queue-capacity: 100
+
 
 springdoc:
   api-docs:

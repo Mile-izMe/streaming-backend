@@ -1,6 +1,6 @@
 package com.melody.melody_stream.modules.processmusic;
 
-import com.melody.melody_stream.entity.enums.JobStatus;
+import com.melody.melody_stream.core.enums.JobStatus;
 import com.melody.melody_stream.modules.job.entity.Job;
 import com.melody.melody_stream.modules.job.service.JobService;
 import com.melody.melody_stream.modules.processmusic.message.ProcessMusicMessage;

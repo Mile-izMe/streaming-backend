@@ -1,7 +1,7 @@
-package com.melody.melody_stream.entity;
+package com.melody.melody_stream.modules.auth.entity;
 
 import com.melody.melody_stream.core.entity.AuditableEntity;
-import com.melody.melody_stream.entity.enums.RoleName;
+import com.melody.melody_stream.core.enums.RoleName;
 import jakarta.persistence.*;
 import jakarta.persistence.CascadeType;
 import lombok.*;
