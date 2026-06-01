@@ -60,4 +60,9 @@ public class User extends AuditableEntity {
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<RefreshToken> refreshTokens = new ArrayList<>();
+
+    // ── Helpers ──────────────────────────────────────────────
+    public boolean isActive()  { return this.status == UserStatus.ACTIVE; }
+    public boolean isPending() { return this.status == UserStatus.PENDING; }
+    public boolean isBanned()  { return this.status == UserStatus.BANNED; }
 }

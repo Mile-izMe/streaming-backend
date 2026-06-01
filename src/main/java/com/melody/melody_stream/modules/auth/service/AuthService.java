@@ -86,7 +86,7 @@ public class AuthService {
             throw new AuthException("Verification link has expired. Please request a new one");
         }
 
-        if (user.getStatus() == UserStatus.ACTIVE) {
+        if (user.isActive()) {
             throw new AuthException("Email already verified");
         }
 
@@ -173,7 +173,7 @@ public class AuthService {
         User user = userRepository.findByIdWithRolesAndPermissions(userId)
                 .orElseThrow(() -> new AuthException("User not found"));
 
-        if (user.getStatus() != UserStatus.ACTIVE) {
+        if (!user.isActive()) {
             throw new AuthException("Account is not active.");
         }
 
