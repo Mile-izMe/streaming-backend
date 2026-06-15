@@ -3,11 +3,13 @@ package com.melody.melody_stream.modules.auth.entity;
 import com.melody.melody_stream.core.entity.AuditableEntity;
 import com.melody.melody_stream.core.enums.RoleName;
 import jakarta.persistence.*;
-import jakarta.persistence.CascadeType;
 import lombok.*;
-import org.hibernate.annotations.*;
+import org.hibernate.annotations.SQLDelete;
+
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 @Entity
 @Table(name = "roles")
@@ -30,7 +32,7 @@ public class Role extends AuditableEntity {
     private RoleName name;
 
     @OneToMany(mappedBy = "role", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    private List<UserRole> users = new ArrayList<>();
+    private Set<UserRole> users = new HashSet<>();
 
     @OneToMany(mappedBy = "role", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<RolePermission> permissions = new ArrayList<>();

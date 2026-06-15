@@ -27,6 +27,4 @@ public class AuditorConfig {
             return Optional.of(auth.getName());
         };
     }
-
-
 }

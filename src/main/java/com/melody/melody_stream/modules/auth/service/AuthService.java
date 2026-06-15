@@ -2,6 +2,8 @@ package com.melody.melody_stream.modules.auth.service;
 
 import com.melody.melody_stream.core.enums.UserStatus;
 import com.melody.melody_stream.core.exception.AuthException;
+import com.melody.melody_stream.infrastructure.minio.service.MinioWriteService;
+import com.melody.melody_stream.modules.auth.dto.request.AvatarRequest;
 import com.melody.melody_stream.modules.auth.dto.request.LoginRequest;
 import com.melody.melody_stream.modules.auth.dto.request.RefreshTokenRequest;
 import com.melody.melody_stream.modules.auth.dto.request.RegisterRequest;
@@ -19,6 +21,7 @@ import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
@@ -32,6 +35,7 @@ public class AuthService {
     private final PasswordEncoder passwordEncoder;
     private final JwtTokenService jwtTokenService;
     private final RefreshTokenService refreshTokenService;
+    private final MinioWriteService minioWriteService;
     
     private final ApplicationEventPublisher applicationEventPublisher;
 
@@ -79,6 +83,40 @@ public class AuthService {
                 user.getEmail(),
                 "Verification email sent. Please check your inbox."
         );
+    }
+
+    // ── Upload Avatar ──────────────────────────────────────────────
+    @Transactional
+    public String uploadAvatar(AvatarRequest request) {
+        // 1. Validate file
+        if (request.file().isEmpty()) {
+            throw new IllegalArgumentException("File must not be empty");
+        }
+
+        // Accepted image only
+        String contentType = request.file().getContentType();
+        if (contentType == null || !contentType.startsWith("image/")) {
+            throw new IllegalArgumentException("Only accepted image format");
+        }
+
+        // 2. Get user from DB
+        User user = userRepository.findById(request.userId())
+                .orElseThrow(() -> new RuntimeException("User Not Found"));
+
+        // 3. Create Key for image & upload to MinIO
+        String fileKey = "avatars/user-" + user.getId() + "-" + UUID.randomUUID().toString() + ".jpg";
+
+        try {
+            minioWriteService.uploadBuffer(fileKey, request.file().getBytes(), contentType);
+        } catch (Exception e) {
+            log.error("[AuthService] Failed to upload avatar for users: {}", user.getUsername(), e);
+            throw new RuntimeException("Can not upload image, please try again later");
+        }
+
+        user.setAvatarUrl(fileKey);
+        userRepository.save(user);
+
+        return fileKey;
     }
 
     // ── Verify email ──────────────────────────────────────────
@@ -151,6 +189,7 @@ public class AuthService {
         return new AuthResponse(
                 user.getId(),
                 user.getUsername(),
+                user.getEmail(),
                 payload.roles(),
                 new TokenPair(accessToken, refreshToken)
         );

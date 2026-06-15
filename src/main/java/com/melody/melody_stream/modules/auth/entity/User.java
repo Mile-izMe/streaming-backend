@@ -10,7 +10,9 @@ import org.hibernate.annotations.*;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 @Entity
 @Table(name = "users", indexes = {
@@ -37,6 +39,9 @@ public class User extends AuditableEntity {
     @Column(name = "email", unique = true, nullable = false)
     private String email;
 
+    @Column(name = "avatar_url", nullable = true)
+    private String avatarUrl;
+
     @Enumerated(EnumType.STRING)
     @Column(name = "status", nullable = false)
     private UserStatus status = UserStatus.ACTIVE;
@@ -53,7 +58,7 @@ public class User extends AuditableEntity {
     private List<Playlist> playlists = new ArrayList<>();
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    private List<UserRole> roles = new ArrayList<>();
+    private Set<UserRole> roles = new HashSet<>();
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<RefreshToken> refreshTokens = new ArrayList<>();

@@ -85,8 +85,7 @@ public class JwtTokenService {
         String[] parts   = token.split("\\.");
         byte[]   decoded = java.util.Base64.getUrlDecoder().decode(parts[1]);
         try {
-            var node     = new com.fasterxml.jackson.databind.ObjectMapper()
-                    .readTree(decoded);
+            var node        = new com.fasterxml.jackson.databind.ObjectMapper().readTree(decoded);
             String sub      = node.get("sub").asText();
             String deviceId = node.has("deviceId") ? node.get("deviceId").asText() : null;
             return new JwtPayload(sub, null, null, null, deviceId);

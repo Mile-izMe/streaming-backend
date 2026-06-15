@@ -1,9 +1,6 @@
 package com.melody.melody_stream.modules.auth.controller;
 
-import com.melody.melody_stream.modules.auth.dto.request.LoginRequest;
-import com.melody.melody_stream.modules.auth.dto.request.LogoutRequest;
-import com.melody.melody_stream.modules.auth.dto.request.RefreshTokenRequest;
-import com.melody.melody_stream.modules.auth.dto.request.RegisterRequest;
+import com.melody.melody_stream.modules.auth.dto.request.*;
 import com.melody.melody_stream.modules.auth.dto.response.AuthResponse;
 import com.melody.melody_stream.modules.auth.dto.response.JwtPayload;
 import com.melody.melody_stream.modules.auth.dto.response.RegisterResponse;
@@ -13,9 +10,12 @@ import io.swagger.v3.oas.annotations.Operation;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api/auth")
@@ -32,6 +32,19 @@ public class AuthController {
     ) {
         return ResponseEntity.status(HttpStatus.CREATED)
                 .body(authService.register(request));
+    }
+
+    // POST /api/auth/avatar
+    @PostMapping(value = "/avatar", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<?> uploadRegisterAvatar(
+            @Valid @RequestBody AvatarRequest request
+    ) {
+        String avatarUrl = authService.uploadAvatar(request);
+
+        return ResponseEntity.ok(Map.of(
+                "message", "Upload avatar successfully!",
+                "avatarUrl", avatarUrl
+        ));
     }
 
     // GET /api/auth/verify-email?token=...
