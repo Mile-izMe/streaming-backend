@@ -44,6 +44,9 @@ public class Song extends AuditableEntity {
     @Column(name = "duration")
     private Integer duration;
 
+    @Column(name = "lyrics")
+    private String[] lyrics;
+
     @OneToMany(mappedBy = "song", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<PlaylistSong> playlists = new ArrayList<>();
 }

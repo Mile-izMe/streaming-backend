@@ -15,4 +15,6 @@ public class SongSaveRequest {
     private String objectKey;
 
     private String thumbnailUrl;
+
+    private String[] lyrics;
 }

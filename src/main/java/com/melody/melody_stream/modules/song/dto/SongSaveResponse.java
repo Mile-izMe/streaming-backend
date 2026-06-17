@@ -11,4 +11,5 @@ public class SongSaveResponse {
     private String artist;
     private String audioUrl;
     private String thumbnailUrl;
+    private String[] lyrics;
 }

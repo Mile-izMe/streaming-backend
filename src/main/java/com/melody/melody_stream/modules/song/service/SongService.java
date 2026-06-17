@@ -17,6 +17,7 @@ import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
@@ -69,6 +70,7 @@ public class SongService {
                 .artist(song.getArtist())
                 .audioUrl(song.getAudioUrl())
                 .thumbnailUrl(song.getThumbnailUrl())
+                .lyrics(song.getLyrics())
                 .build();
     }
 

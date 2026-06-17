@@ -15,7 +15,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequestMapping("api/v1/songs")
+@RequestMapping("api/songs")
 @RequiredArgsConstructor
 public class SongController {
 
@@ -28,7 +28,7 @@ public class SongController {
         return ResponseEntity.ok(songService.getPresignUrl(request));
     }
 
-    @PostMapping
+    @PostMapping("metadata")
     public ResponseEntity<SongSaveResponse> saveSong(
             @RequestBody @Valid SongSaveRequest request
     ) {
