@@ -34,6 +34,8 @@ public class SecurityConfig {
             "/api/auth/refresh",
             "/api/auth/verify-email",
             "/actuator/health",
+            "/api/songs",
+            "/api/songs/**",
 
             // -------- SWAGGER -----------
             "/v3/api-docs/**",

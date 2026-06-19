@@ -7,10 +7,13 @@ import com.melody.melody_stream.modules.processmusic.message.ProcessMusicMessage
 import com.melody.melody_stream.modules.processmusic.types.ProcessMusicStep;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import org.springframework.util.FileSystemUtils;
 
 import java.io.File;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class ProcessMusicOrchestrator {
@@ -18,7 +21,6 @@ public class ProcessMusicOrchestrator {
     private final JobService jobService;
     private final ProcessMusicPipeline pipeline;
 
-    @Transactional
     public void handle(ProcessMusicMessage msg) {
         Job job = jobService.mustGet(msg.jobId());
 
@@ -41,12 +43,29 @@ public class ProcessMusicOrchestrator {
                 .hlsOutputDir(hlsOutputDir)
                 .build();
 
-        while (job.getCurrentStep() < job.getMaxStep()) {
-            ProcessMusicStep step = pipeline.stepByIndex(job.getCurrentStep());
-            step.process(ctx);
-            job = jobService.increaseStep(job.getId(), 1);
+        try {
+            while (job.getCurrentStep() < job.getMaxStep()) {
+                ProcessMusicStep step = pipeline.stepByIndex(job.getCurrentStep());
+                step.process(ctx);
+                job = jobService.increaseStep(job.getId(), 1);
+            }
+            jobService.markCompleted(job.getId());
+        } catch (Exception e) {
+            throw new RuntimeException("Process Music Failed",e);
+        } finally {
+            forceCleanUp(baseTempDir);
         }
+    }
 
-        jobService.markCompleted(job.getId());
+    private void forceCleanUp(String directoryPath) {
+        try {
+            File dir = new File(directoryPath);
+            if (dir.exists()) {
+                FileSystemUtils.deleteRecursively(dir);
+                log.info("Cleanup all temporary files: {}", directoryPath);
+            }
+        } catch (Exception e) {
+            log.warn("Could not delete all temporary files: {}. Error: {}", directoryPath, e.getMessage());
+        }
     }
 }

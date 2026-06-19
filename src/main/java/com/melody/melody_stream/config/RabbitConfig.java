@@ -1,6 +1,7 @@
 package com.melody.melody_stream.config;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.springframework.amqp.core.AcknowledgeMode;
 import org.springframework.amqp.rabbit.config.SimpleRabbitListenerContainerFactory;
 import org.springframework.amqp.rabbit.connection.ConnectionFactory;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
@@ -18,13 +19,7 @@ public class RabbitConfig {
      */
     @Bean
     public MessageConverter jsonMessageConverter() {
-        // Create ObjectMapper manually instead of injecting it
-        ObjectMapper objectMapper = new ObjectMapper();
-
-        // If your ProcessMusicMessage contains Date/LocalDateTime fields in the future,
-        // you might need to add: objectMapper.findAndRegisterModules();
-
-        return new JacksonJsonMessageConverter(String.valueOf(objectMapper));
+        return new JacksonJsonMessageConverter();
     }
 
     /**
@@ -51,6 +46,7 @@ public class RabbitConfig {
         SimpleRabbitListenerContainerFactory factory = new SimpleRabbitListenerContainerFactory();
         factory.setConnectionFactory(connectionFactory);
         factory.setMessageConverter(messageConverter);
+        factory.setAcknowledgeMode(AcknowledgeMode.MANUAL);
 
         // --- PERFORMANCE OPTIMIZATION CONFIGURATIONS FOR THE FUTURE ---
 

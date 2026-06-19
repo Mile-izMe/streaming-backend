@@ -68,7 +68,7 @@ public class UploadStep implements ProcessMusicStep {
                 Path relativePath = outputDirPath.relativize(file);
 
                 // Replace "\" to "/" for standard format S3 Key even runs on Windows or Linux
-                String s3Key = String.format("processed/songs/%d/%s",
+                String s3Key = String.format("processed/songs/%s/%s",
                         songId, relativePath.toString().replace("\\", "/"));
 
                 String contentType = fileName.endsWith(".m3u8")

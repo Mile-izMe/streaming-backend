@@ -1,6 +1,7 @@
 package com.melody.melody_stream.modules.song.entity;
 
 import com.melody.melody_stream.core.entity.AuditableEntity;
+import com.melody.melody_stream.core.enums.SongStatus;
 import com.melody.melody_stream.entity.PlaylistSong;
 import jakarta.persistence.*;
 import lombok.*;
@@ -46,6 +47,10 @@ public class Song extends AuditableEntity {
 
     @Column(name = "lyrics")
     private String[] lyrics;
+
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private SongStatus status = SongStatus.PENDING;
 
     @OneToMany(mappedBy = "song", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<PlaylistSong> playlists = new ArrayList<>();

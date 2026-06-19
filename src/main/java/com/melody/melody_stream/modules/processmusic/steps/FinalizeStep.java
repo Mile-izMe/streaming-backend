@@ -1,5 +1,6 @@
 package com.melody.melody_stream.modules.processmusic.steps;
 
+import com.melody.melody_stream.core.enums.SongStatus;
 import com.melody.melody_stream.modules.processmusic.ProcessMusicContext;
 import com.melody.melody_stream.modules.processmusic.types.ProcessMusicStep;
 import com.melody.melody_stream.modules.song.entity.Song;
@@ -40,13 +41,14 @@ public class FinalizeStep implements ProcessMusicStep {
             log.info("Starting finalize step for Song ID: {}", songId);
 
             // 1. Create HLS path point to file master playlist
-            String hlsUrl = String.format("processed/songs/%d/master.m3u8", songId);
+            String hlsUrl = String.format("processed/songs/%s/master.m3u8", songId);
 
             // 2. Update record Song in database with new HLS URL
             Song song = songRepository.findById(songId)
                     .orElseThrow(() -> new RuntimeException("Song not found with ID: " + songId));
 
             song.setAudioUrl(hlsUrl);
+            song.setStatus(SongStatus.COMPLETED);
             songRepository.save(song);
 
             log.info("Database updated successfully. New Audio URL: {}", hlsUrl);

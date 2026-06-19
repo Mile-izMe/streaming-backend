@@ -23,7 +23,7 @@ public interface JobRepository extends JpaRepository<Job, String> {
             @Param("allowedStatus") List<JobStatus> allowedStatuses
     );
 
-    @Modifying
+    @Modifying(clearAutomatically = true, flushAutomatically = true)
     @Query("UPDATE Job j SET j.currentStep = j.currentStep + :by WHERE j.id = :jobId")
     void incrementStep(@Param("jobId") String jobId, @Param("by") int by);
 
