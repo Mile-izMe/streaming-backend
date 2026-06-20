@@ -10,7 +10,7 @@ public class SongResponse {
     private String title;
     private String artist;
     private String audioUrl;
-    private String[] lyrics;
+    private String lyrics;
     private String thumbnailUrl;
     private String status;
     private Integer duration;

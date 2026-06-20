@@ -36,7 +36,7 @@ public class SongController {
             @RequestBody @Valid SongSaveRequest request,
             @AuthenticationPrincipal JwtPayload userDetails
     ) {
-        System.out.println("lyrics received: " + Arrays.toString(request.getLyrics()));
+
         return ResponseEntity.status(HttpStatus.CREATED)
                 .body(songService.saveSong(request, userDetails.sub()));
     }

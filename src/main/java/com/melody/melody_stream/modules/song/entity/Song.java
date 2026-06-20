@@ -1,14 +1,10 @@
 package com.melody.melody_stream.modules.song.entity;
 
-import com.melody.melody_stream.core.converter.StringArrayConverter;
 import com.melody.melody_stream.core.entity.AuditableEntity;
 import com.melody.melody_stream.core.enums.SongStatus;
 import com.melody.melody_stream.entity.PlaylistSong;
 import jakarta.persistence.*;
 import lombok.*;
-import org.hibernate.annotations.Filter;
-import org.hibernate.annotations.FilterDef;
-import org.hibernate.annotations.ParamDef;
 import org.hibernate.annotations.SQLDelete;
 
 import java.util.ArrayList;
@@ -46,9 +42,8 @@ public class Song extends AuditableEntity {
     @Column(name = "duration")
     private Integer duration;
 
-    @Convert(converter = StringArrayConverter.class)
     @Column(name = "lyrics", columnDefinition = "TEXT")
-    private String[] lyrics;
+    private String lyrics;
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)

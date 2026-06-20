@@ -16,5 +16,5 @@ public class SongSaveRequest {
 
     private String thumbnailUrl;
 
-    private String[] lyrics;
+    private String lyrics;
 }
