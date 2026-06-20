@@ -13,4 +13,5 @@ public class SongResponse {
     private String[] lyrics;
     private String thumbnailUrl;
     private String status;
+    private Integer duration;
 }

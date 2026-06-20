@@ -1,5 +1,6 @@
 package com.melody.melody_stream.modules.song.entity;
 
+import com.melody.melody_stream.core.converter.StringArrayConverter;
 import com.melody.melody_stream.core.entity.AuditableEntity;
 import com.melody.melody_stream.core.enums.SongStatus;
 import com.melody.melody_stream.entity.PlaylistSong;
@@ -45,7 +46,8 @@ public class Song extends AuditableEntity {
     @Column(name = "duration")
     private Integer duration;
 
-    @Column(name = "lyrics")
+    @Convert(converter = StringArrayConverter.class)
+    @Column(name = "lyrics", columnDefinition = "TEXT")
     private String[] lyrics;
 
     @Enumerated(EnumType.STRING)

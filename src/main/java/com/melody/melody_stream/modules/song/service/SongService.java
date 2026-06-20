@@ -38,6 +38,7 @@ public class SongService {
                 .artist(request.getArtist())
                 .audioUrl(request.getObjectKey())
                 .thumbnailUrl(request.getThumbnailUrl())
+                .lyrics(request.getLyrics())
                 .build();
 
         song = songRepository.save(song);
@@ -121,6 +122,8 @@ public class SongService {
                 .audioUrl(song.getAudioUrl())
                 .thumbnailUrl(song.getThumbnailUrl())
                 .status(song.getStatus().name())
+                .duration(song.getDuration())
+                .lyrics(song.getLyrics())
                 .build();
     }
 }

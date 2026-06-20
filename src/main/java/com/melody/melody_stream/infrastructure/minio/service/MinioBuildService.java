@@ -1,5 +1,7 @@
 package com.melody.melody_stream.infrastructure.minio.service;
 
+import io.minio.GetObjectArgs;
+import io.minio.MinioClient;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -9,6 +11,8 @@ import software.amazon.awssdk.services.s3.presigner.S3Presigner;
 import software.amazon.awssdk.services.s3.presigner.model.GetObjectPresignRequest;
 import software.amazon.awssdk.services.s3.presigner.model.PutObjectPresignRequest;
 
+import java.io.InputStream;
+import java.nio.charset.StandardCharsets;
 import java.time.Duration;
 
 @Service
@@ -16,6 +20,7 @@ import java.time.Duration;
 public class MinioBuildService {
 
     private final S3Presigner s3Presigner;
+    private final MinioClient minioClient;
 
     @Value("${spring.minio.bucket-name}")
     private String bucket;
@@ -53,5 +58,18 @@ public class MinioBuildService {
                 .build();
 
         return s3Presigner.presignPutObject(presignRequest).url().toString();
+    }
+
+    public String getContent(String key) {
+        try (InputStream is = minioClient.getObject(
+                GetObjectArgs.builder()
+                        .bucket(bucket)
+                        .object(key)
+                        .build()
+        )) {
+            return new String(is.readAllBytes(), StandardCharsets.UTF_8);
+        } catch (Exception e) {
+            throw new RuntimeException("Failed to get content: " + key, e);
+        }
     }
 }
