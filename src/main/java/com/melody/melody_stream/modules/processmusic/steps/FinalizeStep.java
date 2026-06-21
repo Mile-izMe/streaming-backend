@@ -1,6 +1,8 @@
 package com.melody.melody_stream.modules.processmusic.steps;
 
+import com.melody.melody_stream.core.enums.NotificationType;
 import com.melody.melody_stream.core.enums.SongStatus;
+import com.melody.melody_stream.modules.notification.service.NotificationService;
 import com.melody.melody_stream.modules.processmusic.ProcessMusicContext;
 import com.melody.melody_stream.modules.processmusic.types.ProcessMusicStep;
 import com.melody.melody_stream.modules.song.entity.Song;
@@ -20,6 +22,7 @@ import java.nio.file.Paths;
 public class FinalizeStep implements ProcessMusicStep {
 
     private final SongRepository songRepository;
+    private final NotificationService notificationService;
 
     @Override
     public int stepIndex() {
@@ -50,28 +53,43 @@ public class FinalizeStep implements ProcessMusicStep {
             song.setAudioUrl(hlsUrl);
             song.setStatus(SongStatus.COMPLETED);
             songRepository.save(song);
-
             log.info("Database updated successfully. New Audio URL: {}", hlsUrl);
 
-            // 4. CLEANUP
-            // Delete temporary files in Disk to avoid full memory in Server
-            if (outputDir != null && !outputDir.trim().isEmpty()) {
-                Path outputDirPath = Paths.get(outputDir);
-                FileSystemUtils.deleteRecursively(outputDirPath);
-                log.info("Cleaned up temporary directory: {}", outputDirPath);
+            try {
+                notificationService.send(
+                        context.getUserId(),
+                        NotificationType.SONG_COMPLETED,
+                        "Song is ready",
+                        song.getTitle() + " processed successfully",
+                        songId
+                );
+            } catch (Exception notifError) {
+                log.warn("Failed to send notification for Song ID: {}, error: {}", songId, notifError.getMessage());
             }
-
-            // If save localTempPath (file download initial), delete it also
-            String localTempPath = context.getLocalFilePath();
-            if (localTempPath != null) {
-                FileSystemUtils.deleteRecursively(Paths.get(localTempPath).getParent());
-            }
-
-            log.info("Finalize step completed successfully for Song ID: {}", songId);
 
         } catch (Exception error) {
             log.error("Finalize step failed for Song ID: {}", songId, error);
             throw new RuntimeException("Finalize step failed: " + error.getMessage(), error);
+        } finally {
+            try {
+                // 4. CLEANUP
+                // Delete temporary files in Disk to avoid full memory in Server
+                if (outputDir != null && !outputDir.trim().isEmpty()) {
+                    Path outputDirPath = Paths.get(outputDir);
+                    FileSystemUtils.deleteRecursively(outputDirPath);
+                    log.info("Cleaned up temporary directory: {}", outputDirPath);
+                }
+
+                // If save localTempPath (file download initial), delete it also
+                String localTempPath = context.getLocalFilePath();
+                if (localTempPath != null) {
+                    FileSystemUtils.deleteRecursively(Paths.get(localTempPath).getParent());
+                }
+
+                log.info("Finalize step completed successfully for Song ID: {}", songId);
+            } catch (Exception cleanupError) {
+                log.warn("Cleanup failed for Song ID: {}, error: {}", songId, cleanupError.getMessage());
+            }
         }
     }
 }

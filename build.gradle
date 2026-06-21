@@ -56,6 +56,9 @@ dependencies {
 	runtimeOnly 'org.postgresql:postgresql'
 	developmentOnly 'org.springframework.boot:spring-boot-docker-compose'
 
+	// === WebSocket ===
+	implementation 'org.springframework.boot:spring-boot-starter-websocket'
+
 	// === Test ===
 	testImplementation 'org.springframework.boot:spring-boot-starter-data-jpa-test'
 	testImplementation 'org.springframework.boot:spring-boot-starter-security-test'

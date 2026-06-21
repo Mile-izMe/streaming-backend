@@ -115,12 +115,16 @@ public class SongService {
     }
 
     private SongResponse toResponse(Song song) {
+        String thumbnailUrl = song.getThumbnailUrl() != null
+                ? minioBuildService.buildSignedGetUrl(song.getThumbnailUrl(), 3600) // 1 giờ
+                : null;
+
         return SongResponse.builder()
                 .id(song.getId())
                 .title(song.getTitle())
                 .artist(song.getArtist())
                 .audioUrl(song.getAudioUrl())
-                .thumbnailUrl(song.getThumbnailUrl())
+                .thumbnailUrl(thumbnailUrl)
                 .status(song.getStatus().name())
                 .duration(song.getDuration())
                 .lyrics(song.getLyrics())
