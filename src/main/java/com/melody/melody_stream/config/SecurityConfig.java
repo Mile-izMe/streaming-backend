@@ -36,6 +36,8 @@ public class SecurityConfig {
             "/actuator/health",
             "/api/songs",
             "/api/songs/**",
+            "/ws/**",
+            "/ws/info/**",
 
             // -------- SWAGGER -----------
             "/v3/api-docs/**",
