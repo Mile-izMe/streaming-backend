@@ -1,0 +1,15 @@
+services:
+  influxdb:
+    image: influxdb:1.8
+    container_name: melody-influxdb
+    ports:
+      - "8086:8086"
+    environment:
+      INFLUXDB: k6
+      INFLUXDB_HTTP_AUTH_ENABLED: false
+    volumes:
+      - influxdb_data:/var/lib/influxdb
+
+volumes:
+  influxdb_data:
+    driver: local
