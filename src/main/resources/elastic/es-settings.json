@@ -1,0 +1,27 @@
+{
+  "analysis": {
+    "filter": {
+      "no_accent_filter": {
+        "type": "asciifolding",
+        "preserve_original": true
+      },
+      "edge_ngram_filter": {
+        "type": "edge_ngram",
+        "min_gram": 2,
+        "max_gram": 15
+      }
+    },
+    "analyzer": {
+      "vi_analyzer": {
+        "type": "custom",
+        "tokenizer": "standard",
+        "filter": [ "lowercase", "no_accent_filter" ]
+      },
+      "ngram_analyzer": {
+        "type": "custom",
+        "tokenizer": "standard",
+        "filter": [ "lowercase", "no_accent_filter", "edge_ngram_filter" ]
+      }
+    }
+  }
+}

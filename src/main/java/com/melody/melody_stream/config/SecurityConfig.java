@@ -36,6 +36,7 @@ public class SecurityConfig {
             "/actuator/health",
             "/api/songs",
             "/api/songs/**",
+            "/api/search",
             "/ws/**",
             "/ws/info/**",
 
