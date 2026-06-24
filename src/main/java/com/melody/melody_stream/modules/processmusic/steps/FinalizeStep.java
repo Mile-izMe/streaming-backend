@@ -2,6 +2,7 @@ package com.melody.melody_stream.modules.processmusic.steps;
 
 import com.melody.melody_stream.core.enums.NotificationType;
 import com.melody.melody_stream.core.enums.SongStatus;
+import com.melody.melody_stream.core.event.SongChangedEvent;
 import com.melody.melody_stream.modules.notification.service.NotificationService;
 import com.melody.melody_stream.modules.processmusic.ProcessMusicContext;
 import com.melody.melody_stream.modules.processmusic.types.ProcessMusicStep;
@@ -10,6 +11,7 @@ import com.melody.melody_stream.modules.song.repository.SongRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 import org.springframework.util.FileSystemUtils;
 
@@ -23,6 +25,7 @@ public class FinalizeStep implements ProcessMusicStep {
 
     private final SongRepository songRepository;
     private final NotificationService notificationService;
+    private final ApplicationEventPublisher eventPublisher;
 
     @Override
     public int stepIndex() {
@@ -54,6 +57,8 @@ public class FinalizeStep implements ProcessMusicStep {
             song.setStatus(SongStatus.COMPLETED);
             songRepository.save(song);
             log.info("Database updated successfully. New Audio URL: {}", hlsUrl);
+
+            eventPublisher.publishEvent(new SongChangedEvent(song));
 
             try {
                 notificationService.send(

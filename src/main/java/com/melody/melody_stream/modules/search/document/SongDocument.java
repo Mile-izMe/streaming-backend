@@ -4,7 +4,7 @@ import jakarta.persistence.Id;
 import lombok.*;
 import org.springframework.data.elasticsearch.annotations.*;
 
-import java.time.Instant;
+import java.time.LocalDate;
 
 @Document(indexName = "songs")
 @Setting(settingPath = "elastic/es-settings.json")
@@ -53,9 +53,9 @@ public class SongDocument {
     @Field(type = FieldType.Integer)
     private Integer duration;
 
-    @Field(type = FieldType.Date)
-    private Instant createdAt;
+    @Field(type = FieldType.Date, format = DateFormat.date_optional_time)
+    private LocalDate createdAt;
 
-    @Field(type = FieldType.Date)
-    private Instant updatedAt;
+    @Field(type = FieldType.Date, format = DateFormat.date_optional_time)
+    private LocalDate updatedAt;
 }

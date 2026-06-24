@@ -19,23 +19,19 @@ public class SearchService {
 
     public SearchResponse search(String keyword, int size) {
 
+        String searchKeyword = "*" + keyword.toLowerCase().trim() + "*";
+
         // ── Search Songs ──────────────────────────────────────
         Query songQuery = NativeQuery.builder()
                 .withQuery(q -> q
                         .bool(b -> b
                                 .must(m -> m
-                                        .multiMatch(mm -> mm
-                                                .query(keyword)
-                                                // ^5: Match TOTALLY Eng or Vie (Perfect)
-                                                // ^4: Match with non Vie symptom
-                                                // ^3: Math a little with while entering (Autocomplete)
-                                                .fields(
-                                                        "title^5", "title.vi^4", "title.ngram^3",
-                                                        "artist^3", "artist.vi^2", "artist.ngram^1")
-                                                //.fuzziness("auto")
+                                        .queryString(qs -> qs
+                                                .fields("title", "artist")
+                                                .query(searchKeyword)
                                         )
                                 )
-                                .filter(f -> f.term(t -> t.field("status").value("COMPLETED")))
+                                .filter(f -> f.match(t -> t.field("status").query("COMPLETED")))
                         )
                 )
                 .withMaxResults(size)

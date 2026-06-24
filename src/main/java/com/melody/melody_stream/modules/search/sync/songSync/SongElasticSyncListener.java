@@ -1,4 +1,4 @@
-package com.melody.melody_stream.modules.search.sync;
+package com.melody.melody_stream.modules.search.sync.songSync;
 
 import com.melody.melody_stream.core.event.SongChangedEvent;
 import com.melody.melody_stream.modules.search.document.SongDocument;
@@ -12,6 +12,7 @@ import org.springframework.transaction.event.TransactionPhase;
 import org.springframework.transaction.event.TransactionalEventListener;
 
 import java.time.Instant;
+import java.time.LocalDate;
 
 @Slf4j
 @Component
@@ -49,8 +50,8 @@ public class SongElasticSyncListener {
                 .thumbnailUrl(song.getThumbnailUrl())
                 .audioUrl(song.getAudioUrl())
                 .duration(song.getDuration())
-                .createdAt(Instant.from(song.getCreatedAt()))
-                .updatedAt(Instant.from(song.getUpdatedAt()))
+                .createdAt(LocalDate.from(song.getCreatedAt()))
+                .updatedAt(LocalDate.from(song.getUpdatedAt()))
                 .build();
     }
 }
