@@ -1,12 +1,9 @@
-package com.melody.melody_stream.entity;
+package com.melody.melody_stream.modules.playlist.entity;
 
 import com.melody.melody_stream.core.entity.AuditableEntity;
 import com.melody.melody_stream.modules.song.entity.Song;
 import jakarta.persistence.*;
 import lombok.*;
-import org.hibernate.annotations.Filter;
-import org.hibernate.annotations.FilterDef;
-import org.hibernate.annotations.ParamDef;
 import org.hibernate.annotations.SQLDelete;
 
 @Entity

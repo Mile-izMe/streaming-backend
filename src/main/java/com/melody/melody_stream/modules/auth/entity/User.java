@@ -1,6 +1,6 @@
 package com.melody.melody_stream.modules.auth.entity;
 
-import com.melody.melody_stream.entity.Playlist;
+import com.melody.melody_stream.modules.playlist.entity.Playlist;
 import com.melody.melody_stream.core.enums.UserStatus;
 import com.melody.melody_stream.core.entity.AuditableEntity;
 import jakarta.persistence.*;

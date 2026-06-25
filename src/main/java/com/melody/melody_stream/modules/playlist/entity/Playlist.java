@@ -1,12 +1,9 @@
-package com.melody.melody_stream.entity;
+package com.melody.melody_stream.modules.playlist.entity;
 
 import com.melody.melody_stream.core.entity.AuditableEntity;
 import com.melody.melody_stream.modules.auth.entity.User;
 import jakarta.persistence.*;
 import lombok.*;
-import org.hibernate.annotations.Filter;
-import org.hibernate.annotations.FilterDef;
-import org.hibernate.annotations.ParamDef;
 import org.hibernate.annotations.SQLDelete;
 
 import java.util.ArrayList;
@@ -30,6 +27,12 @@ public class Playlist extends AuditableEntity {
 
     @Column(name = "name", nullable = false)
     private String name;
+
+    @Column(name = "description")
+    private String description;
+
+    @Column(name = "thumbnail_url")
+    private String thumbnailUrl;
 
     @Column(name = "user_id", nullable = false)
     private String userId;

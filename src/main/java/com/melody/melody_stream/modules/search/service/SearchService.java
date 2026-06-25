@@ -1,5 +1,6 @@
 package com.melody.melody_stream.modules.search.service;
 
+import com.melody.melody_stream.infrastructure.minio.service.MinioBuildService;
 import com.melody.melody_stream.modules.search.document.SongDocument;
 import com.melody.melody_stream.modules.search.dto.SearchResponse;
 import com.melody.melody_stream.modules.search.dto.SearchResult;
@@ -16,6 +17,7 @@ import java.util.List;
 public class SearchService {
 
     private final ElasticsearchOperations elasticsearchOperations;
+    private final MinioBuildService minioBuildService;
 
     public SearchResponse search(String keyword, int size) {
 
@@ -45,7 +47,7 @@ public class SearchService {
                         .id(hit.getContent().getId())
                         .title(hit.getContent().getTitle())
                         .subtitle(hit.getContent().getArtist())
-                        .thumbnailUrl(hit.getContent().getThumbnailUrl())
+                        .thumbnailUrl(minioBuildService.buildSignedGetUrl(hit.getContent().getThumbnailUrl(), 3600))
                         .data(hit.getContent())
                         .build()
                 )

@@ -2,7 +2,7 @@ package com.melody.melody_stream.modules.song.entity;
 
 import com.melody.melody_stream.core.entity.AuditableEntity;
 import com.melody.melody_stream.core.enums.SongStatus;
-import com.melody.melody_stream.entity.PlaylistSong;
+import com.melody.melody_stream.modules.playlist.entity.PlaylistSong;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.SQLDelete;
