@@ -1,6 +1,7 @@
 package com.melody.melody_stream.modules.playlist.service;
 
 import com.melody.melody_stream.infrastructure.minio.service.MinioBuildService;
+import com.melody.melody_stream.infrastructure.minio.service.MinioWriteService;
 import com.melody.melody_stream.modules.playlist.dto.PlaylistRequest;
 import com.melody.melody_stream.modules.playlist.dto.PlaylistResponse;
 import com.melody.melody_stream.modules.playlist.entity.PlayListSongId;
@@ -13,11 +14,15 @@ import com.melody.melody_stream.modules.song.entity.Song;
 import com.melody.melody_stream.modules.song.repository.SongRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class PlaylistService {
@@ -26,12 +31,32 @@ public class PlaylistService {
     private final PlaylistSongRepository playlistSongRepository;
     private final SongRepository songRepository;
     private final MinioBuildService minioBuildService;
+    private final MinioWriteService minioWriteService;
 
     // ── Create playlist ──────────────────────────────────────────
     public PlaylistResponse create(PlaylistRequest request, String userId) {
+        String thumbnailUrl = null;
+        MultipartFile thumbnail = request.getThumbnailUrl();
+
+        if (thumbnail != null && !thumbnail.isEmpty()) {
+            try {
+                String key = String.format("playlist/%s/thumbnail/%s_%s",
+                        userId,
+                        UUID.randomUUID(),
+                        thumbnail.getOriginalFilename()
+                );
+
+                minioWriteService.uploadBuffer(key, thumbnail.getBytes(), thumbnail.getContentType());
+                thumbnailUrl = key;
+            } catch (Exception e) {
+                log.warn("Failed to upload thumbnail, continuing without it: {}", e.getMessage());
+            }
+        }
+
         Playlist playlist = Playlist.builder()
                 .name(request.getName())
                 .description(request.getDescription())
+                .thumbnailUrl(thumbnailUrl)
                 .userId(userId)
                 .build();
         return toResponse(playlistRepository.save(playlist), false);
@@ -151,6 +176,9 @@ public class PlaylistService {
                 .id(playlist.getId())
                 .name(playlist.getName())
                 .description(playlist.getDescription())
+                .thumbnailUrl(playlist.getThumbnailUrl() != null
+                    ? minioBuildService.buildSignedGetUrl(playlist.getThumbnailUrl(), 3600)
+                    : null)
                 .songCount(playlist.getSongs().size())
                 .songs(songs)
                 .createdAt(playlist.getCreatedAt())
