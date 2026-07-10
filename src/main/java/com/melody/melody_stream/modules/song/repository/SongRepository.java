@@ -4,11 +4,13 @@ import com.melody.melody_stream.modules.song.entity.Song;
 import io.lettuce.core.dynamic.annotation.Param;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 
 import java.time.Instant;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.UUID;
 
 public interface SongRepository extends JpaRepository<Song, String> {
     @Query("""
@@ -30,4 +32,8 @@ public interface SongRepository extends JpaRepository<Song, String> {
     );
 
     List<Song> findByUpdatedAtAfter(LocalDateTime lastSyncTime);
+
+    @Modifying(clearAutomatically = true)
+    @Query("UPDATE Song s SET s.deletedAt = CURRENT_TIMESTAMP, s.deletedBy = :userId WHERE s.id = :id")
+    void softDelete(@Param("id") String id, @Param("userId") UUID userId);
 }

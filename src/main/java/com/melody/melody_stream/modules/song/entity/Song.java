@@ -12,7 +12,6 @@ import java.util.List;
 
 @Entity
 @Table(name = "songs")
-@SQLDelete(sql = "UPDATE songs SET deleted_at = NOW() WHERE id = ?")
 @org.hibernate.annotations.SQLRestriction("deleted_at IS NULL")
 @Getter
 @Setter

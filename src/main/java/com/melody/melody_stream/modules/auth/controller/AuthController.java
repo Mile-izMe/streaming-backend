@@ -1,5 +1,7 @@
 package com.melody.melody_stream.modules.auth.controller;
 
+import com.melody.melody_stream.core.exception.InvalidTokenException;
+import com.melody.melody_stream.core.exception.TokenExpiredException;
 import com.melody.melody_stream.modules.auth.dto.request.*;
 import com.melody.melody_stream.modules.auth.dto.response.AuthResponse;
 import com.melody.melody_stream.modules.auth.dto.response.JwtPayload;
@@ -9,12 +11,14 @@ import com.melody.melody_stream.modules.auth.service.AuthService;
 import io.swagger.v3.oas.annotations.Operation;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
+import java.net.URI;
 import java.util.Map;
 
 @RestController
@@ -23,6 +27,8 @@ import java.util.Map;
 public class AuthController {
 
     private final AuthService authService;
+    @Value("${app.frontend-url}")
+    private String frontendUrl;
 
     // POST /api/auth/register
     @PostMapping("/register")
@@ -52,7 +58,20 @@ public class AuthController {
     @Operation(summary = "Verify email", security = {})
     public ResponseEntity<Void> verifyEmail(@RequestParam String token) {
         authService.verifyEmail(token);
-        return ResponseEntity.noContent().build();   // 204 — redirect handled by client
+        try {
+            authService.verifyEmail(token);
+            return ResponseEntity.status(HttpStatus.FOUND)
+                    .location(URI.create(frontendUrl + "/authentication"))
+                    .build();
+        } catch (TokenExpiredException e) {
+            return ResponseEntity.status(HttpStatus.FOUND)
+                    .location(URI.create(frontendUrl + "/authentication/verify-failed?reason=expired"))
+                    .build();
+        } catch (InvalidTokenException e) {
+            return ResponseEntity.status(HttpStatus.FOUND)
+                    .location(URI.create(frontendUrl + "/authentication/verify-failed?reason=invalid"))
+                    .build();
+        }
     }
 
     // POST /api/auth/login

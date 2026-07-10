@@ -3,6 +3,7 @@ package com.melody.melody_stream.modules.song.service;
 import com.melody.melody_stream.core.constant.ActionType;
 import com.melody.melody_stream.core.dto.response.CursorPage;
 import com.melody.melody_stream.core.enums.JobStatus;
+import com.melody.melody_stream.core.exception.ForbiddenException;
 import com.melody.melody_stream.infrastructure.minio.service.MinioBuildService;
 import com.melody.melody_stream.modules.job.entity.Job;
 import com.melody.melody_stream.modules.job.repository.JobRepository;
@@ -13,9 +14,11 @@ import com.melody.melody_stream.modules.song.entity.Song;
 import com.melody.melody_stream.modules.song.repository.SongRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.elasticsearch.ResourceNotFoundException;
 import org.springframework.stereotype.Service;
+
 import java.time.Instant;
 import java.util.HashMap;
 import java.util.List;
@@ -31,6 +34,7 @@ public class SongService {
     private final JobRepository jobRepository;
     private final ProcessMusicPublisher processMusicPublisher;
 
+    // ── Save song ────────────────────────────────────────────────
     @Transactional
     public SongSaveResponse saveSong(SongSaveRequest request, String userId) {
         Song song = Song.builder()
@@ -87,6 +91,7 @@ public class SongService {
                 .build();
     }
 
+    // ── Get song ────────────────────────────────────────────────
     public CursorPage<SongResponse> getSongs(String cursor, int size) {
         Pageable pageable = PageRequest.of(0, size + 1); // +1 để check hasMore
 
@@ -112,6 +117,18 @@ public class SongService {
         Song song = songRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Song not found"));
         return toResponse(song);
+    }
+
+    // ── Delete song ────────────────────────────────────────────────
+    public void delete(String songId, UUID userId) {
+        Song song = songRepository.findById(songId)
+                .orElseThrow(() -> new ResourceNotFoundException("Song not found"));
+
+        if (!song.getCreatedBy().equals(userId)) {
+            throw new ForbiddenException("You are not the owner of this song.");
+        }
+
+        songRepository.softDelete(songId, userId);
     }
 
     private SongResponse toResponse(Song song) {

@@ -15,7 +15,8 @@ public class MailService {
 
     private final JavaMailSender mailSender;
 
-    private String baseUrl = "http://localhost:8080";
+    @Value("${app.base-url}")
+    private String baseUrl;
 
     @Value("${spring.mail.username}")
     private String fromEmail;

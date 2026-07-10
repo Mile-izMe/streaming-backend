@@ -1,0 +1,3 @@
+app:
+  base-url: https://api.melody-stream.com
+  frontend-url: https://melody-stream.com
