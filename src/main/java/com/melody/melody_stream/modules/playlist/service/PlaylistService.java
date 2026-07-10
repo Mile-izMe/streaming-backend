@@ -150,6 +150,7 @@ public class PlaylistService {
     // ── Helper ────────────────────────────────────────────────
     private PlaylistResponse toResponse(Playlist playlist, boolean includeSongs) {
         List<SongResponse> songs = new ArrayList<>();
+        int songCount = (playlist.getSongs() != null) ? playlist.getSongs().size() : 0;
 
         if (includeSongs) {
             songs = playlistSongRepository
@@ -162,6 +163,7 @@ public class PlaylistService {
                                 .title(song.getTitle())
                                 .artist(song.getArtist())
                                 .audioUrl(song.getAudioUrl())
+                                .lyrics(song.getLyrics())
                                 .thumbnailUrl(song.getThumbnailUrl() != null
                                         ? minioBuildService.buildSignedGetUrl(song.getThumbnailUrl(), 3600)
                                         : null)
@@ -179,7 +181,7 @@ public class PlaylistService {
                 .thumbnailUrl(playlist.getThumbnailUrl() != null
                     ? minioBuildService.buildSignedGetUrl(playlist.getThumbnailUrl(), 3600)
                     : null)
-                .songCount(playlist.getSongs().size())
+                .songCount(songCount)
                 .songs(songs)
                 .createdAt(playlist.getCreatedAt())
                 .build();

@@ -8,6 +8,7 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import okhttp3.Response;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
@@ -21,9 +22,9 @@ public class PlaylistController {
 
     private final PlaylistService playlistService;
 
-    @PostMapping
+    @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<PlaylistResponse> create(
-            @Valid @RequestBody PlaylistRequest request,
+            @Valid @ModelAttribute PlaylistRequest request,
             @AuthenticationPrincipal JwtPayload principal
     ) {
         return ResponseEntity.status(HttpStatus.CREATED)
@@ -45,10 +46,10 @@ public class PlaylistController {
         return ResponseEntity.ok(playlistService.getDetail(id, principal.sub()));
     }
 
-    @PutMapping("/{id}")
+    @PutMapping(value = "/{id}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<PlaylistResponse> update(
             @PathVariable String id,
-            @Valid @RequestBody PlaylistRequest request,
+            @Valid @ModelAttribute PlaylistRequest request,
             @AuthenticationPrincipal JwtPayload principal
     ) {
         return ResponseEntity.ok(playlistService.update(id, request, principal.sub()));
