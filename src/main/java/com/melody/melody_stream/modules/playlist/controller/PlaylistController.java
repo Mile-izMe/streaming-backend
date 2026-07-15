@@ -33,9 +33,10 @@ public class PlaylistController {
 
     @GetMapping
     public ResponseEntity<List<PlaylistResponse>> getUserPlaylists(
-            @AuthenticationPrincipal JwtPayload principal
+            @AuthenticationPrincipal JwtPayload principal,
+            @RequestParam(required = false) String checkSongId
     ) {
-        return ResponseEntity.ok(playlistService.getUserPlaylists(principal.sub()));
+        return ResponseEntity.ok(playlistService.getUserPlaylists(principal.sub(), checkSongId));
     }
 
     @GetMapping("/{id}")

@@ -14,6 +14,7 @@ public class PlaylistResponse {
     private String description;
     private String thumbnailUrl;
     private int songCount;
+    private boolean isContainSong;
     private List<SongResponse> songs;
     private LocalDateTime createdAt;
 }

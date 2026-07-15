@@ -63,10 +63,17 @@ public class PlaylistService {
     }
 
     // ── Get list of user ────────────────────────────────
-    public List<PlaylistResponse> getUserPlaylists(String userId) {
+    public List<PlaylistResponse> getUserPlaylists(String userId, String checkSongId) {
         return playlistRepository.findByUserIdOrderByCreatedAtDesc(userId)
                 .stream()
-                .map(p -> toResponse(p, false))
+                .map(playlist -> {
+                    boolean isContain = false;
+
+                    if (checkSongId != null && !checkSongId.trim().isEmpty()) {
+                        isContain = playlistSongRepository.existsByPlaylistIdAndSongId(playlist.getId(), checkSongId);
+                    }
+                    return toResponse(playlist, false, isContain);
+                })
                 .toList();
     }
 
@@ -149,6 +156,10 @@ public class PlaylistService {
 
     // ── Helper ────────────────────────────────────────────────
     private PlaylistResponse toResponse(Playlist playlist, boolean includeSongs) {
+        return toResponse(playlist, includeSongs, false);
+    }
+
+    private PlaylistResponse toResponse(Playlist playlist, boolean includeSongs, boolean isContainSong) {
         List<SongResponse> songs = new ArrayList<>();
         int songCount = (playlist.getSongs() != null) ? playlist.getSongs().size() : 0;
 
@@ -172,18 +183,19 @@ public class PlaylistService {
                                 .build();
                     })
                     .toList();
-            }
+        }
 
         return PlaylistResponse.builder()
                 .id(playlist.getId())
                 .name(playlist.getName())
                 .description(playlist.getDescription())
                 .thumbnailUrl(playlist.getThumbnailUrl() != null
-                    ? minioBuildService.buildSignedGetUrl(playlist.getThumbnailUrl(), 3600)
-                    : null)
+                        ? minioBuildService.buildSignedGetUrl(playlist.getThumbnailUrl(), 3600)
+                        : null)
                 .songCount(songCount)
                 .songs(songs)
                 .createdAt(playlist.getCreatedAt())
+                .isContainSong(isContainSong)
                 .build();
     }
 }

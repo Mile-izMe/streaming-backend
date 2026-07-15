@@ -10,4 +10,5 @@ public interface PlaylistSongRepository extends JpaRepository<PlaylistSong, Play
     boolean existsById(PlayListSongId id);
     void deleteById(PlayListSongId id);
     List<PlaylistSong> findByIdPlaylistIdOrderByCreatedAtDesc(String playlistId);
+    boolean existsByPlaylistIdAndSongId(String playlistId, String songId);
 }
