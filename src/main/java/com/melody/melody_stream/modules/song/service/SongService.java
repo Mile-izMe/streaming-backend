@@ -5,6 +5,7 @@ import com.melody.melody_stream.core.dto.response.CursorPage;
 import com.melody.melody_stream.core.enums.JobStatus;
 import com.melody.melody_stream.core.exception.ForbiddenException;
 import com.melody.melody_stream.infrastructure.minio.service.MinioBuildService;
+import com.melody.melody_stream.infrastructure.minio.service.MinioWriteService;
 import com.melody.melody_stream.modules.job.entity.Job;
 import com.melody.melody_stream.modules.job.repository.JobRepository;
 import com.melody.melody_stream.modules.processmusic.ProcessMusicPublisher;
@@ -14,6 +15,7 @@ import com.melody.melody_stream.modules.song.entity.Song;
 import com.melody.melody_stream.modules.song.repository.SongRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.elasticsearch.ResourceNotFoundException;
@@ -25,10 +27,12 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class SongService {
 
+    private final MinioWriteService minioWriteService;
     private final MinioBuildService minioBuildService;
     private final SongRepository songRepository;
     private final JobRepository jobRepository;
@@ -117,6 +121,44 @@ public class SongService {
         Song song = songRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Song not found"));
         return toResponse(song);
+    }
+
+    // ── Update song ────────────────────────────────────────────────
+    public SongResponse update(String songId, SongSaveRequest request, String userId) {
+        Song song = songRepository.findById(songId)
+                .orElseThrow(() -> new RuntimeException("Song not found"));
+
+        if (!song.getCreatedBy().equals(userId)) {
+            throw new RuntimeException("Access denied");
+        }
+
+        song.setTitle(request.getTitle());
+        song.setArtist(request.getArtist());
+        song.setLyrics(request.getLyrics());
+
+        String newThumbnailKey = request.getThumbnailUrl();
+        if (newThumbnailKey != null && !newThumbnailKey.trim().isEmpty()) {
+             if (song.getThumbnailUrl() != null && !song.getThumbnailUrl().equals(newThumbnailKey)) {
+                 try {
+                     minioWriteService.deleteFile(song.getThumbnailUrl());
+                 } catch (Exception e) {
+                     log.warn("Failed to delete old song thumbnail: {}", e.getMessage());
+                 }
+             }
+
+            song.setThumbnailUrl(newThumbnailKey);
+        }
+
+        song = songRepository.save(song);
+
+        return SongResponse.builder()
+                .id(song.getId())
+                .title(song.getTitle())
+                .artist(song.getArtist())
+                .audioUrl(song.getAudioUrl())
+                .thumbnailUrl(song.getThumbnailUrl())
+                .lyrics(song.getLyrics())
+                .build();
     }
 
     // ── Delete song ────────────────────────────────────────────────

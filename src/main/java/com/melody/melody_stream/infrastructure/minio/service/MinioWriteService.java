@@ -2,6 +2,7 @@ package com.melody.melody_stream.infrastructure.minio.service;
 
 import io.minio.MinioClient;
 import io.minio.PutObjectArgs;
+import io.minio.RemoveObjectArgs;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -125,5 +126,28 @@ public class MinioWriteService {
                 .toList();
 
         CompletableFuture.allOf(futures.toArray(new CompletableFuture[0])).join();
+    }
+
+    /**
+     * Delete file from MinIO (Use for both Playlist and Song thumbnail/audio)
+     * @param key The object key to be deleted
+     */
+    public void deleteFile(String key) {
+        if (key == null || key.trim().isEmpty()) {
+            log.debug("[MinioWriteService] Key is null or empty, skip deleting.");
+            return;
+        }
+
+        try {
+            minioClient.removeObject(
+                    RemoveObjectArgs.builder()
+                            .bucket(bucketName)
+                            .object(key)
+                            .build()
+            );
+            log.info("Deleted file successfully from key: {}", key);
+        } catch (Exception e) {
+            log.error("[MinioWriteService] Failed to delete file with key {}", key, e);
+        }
     }
 }
